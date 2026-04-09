@@ -74,7 +74,9 @@ docker pull docker pull quay.io/pragyan-redhat/agents
     "git_user_email": "openhands@all-hands.dev",
     "v1_enabled": true
 }
+docker pull docker pull quay.io/pragyan-redhat/agents
 
+https://github.com/PragyanBhatt/app/tree/ui-fixes/openhands
 //======================================================================
  //build log
  => [internal] load local bake definitions                                                                                                                                      0.0s
