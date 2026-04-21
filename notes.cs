@@ -1,3 +1,6 @@
+ref: https://dev.to/spino327/calling-github-copilot-models-from-openhands-using-litellm-proxy-1hl4 
+
+
 docker run --user 1000:1000 \
   -it --rm \
   --env-file .env \
