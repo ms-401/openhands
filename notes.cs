@@ -1,5 +1,22 @@
 ref: https://dev.to/spino327/calling-github-copilot-models-from-openhands-using-litellm-proxy-1hl4 
 
+console_default_contentview: json
+web_password: password
+anticache: true
+# view_filter: "~m post"
+
+services:
+    mitmproxy:
+        image: mitmproxy/mitmproxy
+        tty: true
+        ports:
+          - "8086:8086"  # proxy                                                                                                            
+          - "8081:8081"  # web-interface          
+        volumes:
+          - ./mitmproxydata:/home/mitmproxy/.mitmproxy   
+          - ./config.yaml:/home/mitmproxy/.mitmproxy/config.yaml 
+        command: mitmweb --web-host 0.0.0.0 --no-web-open-browser -p 8086 --mode reverse:http://192.168.3.161:11434 
+
 
 docker run --user 1000:1000 \
   -it --rm \
