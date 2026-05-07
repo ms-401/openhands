@@ -1,3 +1,98 @@
+nginx lua-resty-openidc example docker compose, provide example with adfs, add list of authorised network id after authentication
+
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    # Lua library paths
+    lua_package_path "/usr/local/openresty/lualib/?.lua;;";
+    
+    # Required for discovery and token validation
+    resolver 8.8.8.8 ipv6=off;
+
+    # Shared dictionary for caching discovery documents
+    lua_shared_dict discovery 1m;
+
+    server {
+        listen 80;
+
+        location / {
+            access_by_lua_block {
+                local opts = {
+                    -- Change these to your actual IdP values
+                    discovery = "https://accounts.google.com/.well-known/openid-configuration",
+                    client_id = "YOUR_CLIENT_ID",
+                    client_secret = "YOUR_CLIENT_SECRET",
+                    redirect_uri = "http://localhost:8080/callback",
+                    scope = "openid email profile",
+                    -- Keep sessions secure
+                    -- Keep sessions secure
+                    ssl_verify = "no",
+                    session_contents = {id_token=true}
+                }
+
+                local res, err = require("resty.openidc").authenticate(opts)
+
+                if err then
+                    ngx.status = 500
+                    ngx.say(err)
+                    ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+                end
+
+                -- Pass user info to backend via headers
+                ngx.req.set_header("X-User-Email", res.id_token.email)
+            }
+
+            root /usr/share/nginx/html;
+            index index.html;
+        }
+    }
+}
+
+
+
+//-----------------------------
+FROM openresty/openresty:alpine
+
+# Install Perl, Curl, and Certificates so OPM can function
+RUN apk add --no-cache \
+    perl \
+    curl \
+    wget \
+    ca-certificates \
+    openssl \
+    && opm get zmartzone/lua-resty-openidc
+
+
+
+//-------------------
+services:
+  openresty:
+    # image: openresty/openresty:alpine
+    build: .    
+    ports:
+      - "81:80"
+    volumes:
+      - ./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ./html:/usr/share/nginx/html:ro
+    environment:
+      - TZ=UTC
+    # Install dependencies on startup for a quick demo
+    # In production, you should build a custom Dockerfile
+    entrypoint: /bin/sh -c "
+      opm get zmartzone/lua-resty-openidc &&
+      /usr/local/openresty/bin/openresty -g 'daemon off;'"
+
+  # Optional: Your actual application
+  # whoami:
+  #   image: traefik/whoami
+  #   networks:
+  #     - default
+
+//==========================================================================================
+
 ref: https://dev.to/spino327/calling-github-copilot-models-from-openhands-using-litellm-proxy-1hl4 
 
 console_default_contentview: json
