@@ -1,0 +1,37 @@
+services:
+  openresty:
+    # image: openresty/openresty:alpine
+    build: .    
+    ports:
+      - "80:80"
+      - "443:443"      
+    networks:
+      - backend
+    volumes:
+      - ./lua:/usr/local/openresty/nginx/lua    
+      - ./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ./html:/usr/share/nginx/html:ro
+      - ./certs:/etc/nginx/ssl:ro
+    environment:
+      - TZ=UTC
+      - CLIENT_ID=608754814648-mgkap1aqjmrdotvul8beq1g6641r8mit.apps.googleusercontent.com
+      - CLIENT_SECRET=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
+      - REDIS_HOST=redis
+      - SESSION_SECRET=12345678901234567890123456789012
+      - SESSION_TTL=60
+    # Install dependencies on startup for a quick demo
+    # In production, you should build a custom Dockerfile
+    # entrypoint: /bin/sh -c "
+    #   opm get zmartzone/lua-resty-openidc &&
+    #   /usr/local/openresty/bin/openresty -g 'daemon off;'"
+  redis:
+    image: redis:7-alpine
+    hostname: redis_srv
+    container_name: redis
+    networks:
+      - backend
+    ports:
+      - "6379:6379"
+
+networks:
+  backend:      
