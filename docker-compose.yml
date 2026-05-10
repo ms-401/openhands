@@ -7,6 +7,12 @@ services:
       - "443:443"      
     networks:
       - backend
+    read_only: true      
+    tmpfs:
+      - /var/run/openresty:uid=1000,gid=1000
+      - /var/cache/nginx:uid=1000,gid=1000
+      - /var/log/nginx:uid=1000,gid=1000
+      - /tmp:uid=1000,gid=1000      
     volumes:
       - ./lua:/usr/local/openresty/nginx/lua    
       - ./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
@@ -34,4 +40,4 @@ services:
       - "6379:6379"
 
 networks:
-  backend:      
+  backend:  
