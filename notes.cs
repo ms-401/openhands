@@ -1,3 +1,70 @@
+docker run -d \
+  --name my-nginx \
+  --user 1000 \
+  --read-only \
+  --tmpfs /var/run/openresty:uid=1000 \
+  --tmpfs /var/cache/nginx:uid=1000 \
+  --tmpfs /var/log/nginx:uid=1000 \
+  --tmpfs /tmp:uid=1000 \
+  -p 8080:8080 \
+  my-secure-app
+
+services:
+  nginx:
+    image: x:01
+    read_only: true
+    tmpfs:
+      - /var/run/openresty
+      - /var/cache/nginx
+      - /var/log/nginx
+      - /tmp
+--------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openresty-app
+spec:
+  template:
+    spec:
+      containers:
+        - name: openresty
+          image: your-image-repo/x:01
+          # securityContext ensures the container runs as non-root
+          securityContext:
+            runAsUser: 1000
+            readOnlyRootFilesystem: true 
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: tmpfs-run
+              mountPath: /var/run/openresty
+            - name: tmpfs-cache
+              mountPath: /var/cache/nginx
+            - name: tmpfs-logs
+              mountPath: /var/log/nginx
+            - name: tmpfs-tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmpfs-run
+          emptyDir:
+            medium: Memory
+        - name: tmpfs-cache
+          emptyDir:
+            medium: Memory
+        - name: tmpfs-logs
+          emptyDir:
+            medium: Memory
+        - name: tmpfs-tmp
+          emptyDir:
+            medium: Memory
+			
+================
+emptyDir:
+  medium: Memory
+  sizeLimit: "64Mi"			
+
+//============================================================================================================================
+
 nginx lua-resty-openidc example docker compose, provide example with adfs, add list of authorised network id after authentication
 
 
