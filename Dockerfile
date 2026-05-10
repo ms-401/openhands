@@ -13,9 +13,10 @@ RUN apk add --no-cache \
 
 # Install lua-resty-openidc via LuaRocks
 # Lua dependencies (production stable set)
-RUN luarocks install lua-resty-session && \
-    luarocks install lua-resty-openidc && \
-    luarocks install lua-resty-redis
+RUN luarocks install lua-resty-http && \
+    luarocks install lua-resty-redis && \
+    luarocks install lua-resty-string && \
+    luarocks install lua-resty-jwt 
 
 
 # 3. Security: Create system directories and set permissions
