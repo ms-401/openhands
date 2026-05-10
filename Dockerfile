@@ -18,11 +18,13 @@ RUN luarocks install lua-resty-session && \
     luarocks install lua-resty-redis
 
 
-# --- FIX STARTS HERE ---
-# 1. Create the user 1000 (if it doesn't exist) and the directories
-# 2. Grant ownership to user 1000
-RUN mkdir -p /var/run/openresty /var/cache/nginx /var/log/nginx && \
-    chown -R 1000:0 /var/run/openresty /var/cache/nginx /var/log/nginx /usr/local/openresty
+# 3. Security: Create system directories and set permissions
+# We also symlink logs to stdout/stderr so they can be read by 'docker logs'
+# without requiring persistent disk writes.
+RUN mkdir -p /var/run/openresty /var/cache/nginx /var/log/nginx /usr/local/openresty/nginx/conf/ \
+    && ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log \
+    && chown -R 1000:0 /var/run/openresty /var/cache/nginx /var/log/nginx /usr/local/openresty
 
 # Ensure OpenResty can find the rocks
 ENV LUA_PATH="/usr/local/openresty/lualib/?.lua;/usr/local/openresty/lualib/?/init.lua;;"
