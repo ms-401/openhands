@@ -1,3 +1,14 @@
+jwt: 
+
+https://github.com/SkyLothar/lua-resty-jwt/blob/master/examples/guard.lua
+https://github.com/api7/lua-resty-jwt
+https://ssojet.com/jwt-validation/validate-jwt-using-es256k-in-lua#setup-and-dependencies
+https://www.benashby.com/jwt-validation-in-openresty/
+https://ssojet.com/jwt-validation/validate-jwt-using-rs384-in-lua#extracting-claims-and-usage
+https://medium.com/@tumulr/building-an-api-gateway-with-nginx-lua-e3dff45e6e63 
+https://github.com/anvouk/lua-resty-jwt-verification
+
+
 docker run -d \
   --name my-nginx \
   --user 1000 \
