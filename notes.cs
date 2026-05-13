@@ -1,4 +1,6 @@
-        # Serve static hello.html
+ref: https://openresty-reference.readthedocs.io/en/latest/Directives/#content_by_lua_file 
+
+# Serve static hello.html
         location = /hello {
             # Ensure the path below points to the directory containing hello.html
             root /usr/local/openresty/nginx/html;
