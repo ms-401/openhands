@@ -1,0 +1,150 @@
+# =============================================================================
+# UBI9 + OpenResty + Manual Lua Libraries
+# =============================================================================
+
+FROM registry.access.redhat.com/ubi9/ubi:9.5
+
+ENV OPENRESTY_VERSION=1.27.1.2
+
+# -----------------------------------------------------------------------------
+# Install dependencies
+# -----------------------------------------------------------------------------
+RUN dnf -y update && \
+    dnf -y install \
+        gcc \
+        gcc-c++ \
+        make \
+        wget \
+        tar \
+        gzip \
+        unzip \
+        git \
+        which \
+        findutils \
+        perl \
+        perl-FindBin \
+        pcre2 \
+        pcre2-devel \
+        openssl \
+        openssl-devel \
+        zlib \
+        zlib-devel \
+        ca-certificates && \
+    dnf clean all
+
+# -----------------------------------------------------------------------------
+# Create user
+# -----------------------------------------------------------------------------
+RUN groupadd -r openresty && \
+    useradd -r -g openresty -s /sbin/nologin openresty
+
+# -----------------------------------------------------------------------------
+# Build OpenResty
+# -----------------------------------------------------------------------------
+WORKDIR /tmp
+
+RUN wget https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz && \
+    tar -xzf openresty-${OPENRESTY_VERSION}.tar.gz && \
+    cd openresty-${OPENRESTY_VERSION} && \
+    ./configure \
+        --prefix=/usr/local/openresty \
+        --user=openresty \
+        --group=openresty \
+        --with-pcre-jit \
+        --with-http_ssl_module \
+        --with-http_realip_module \
+        --with-http_stub_status_module \
+        --with-http_v2_module \
+        --with-http_gzip_static_module \
+        --with-stream \
+        --with-stream_ssl_module && \
+    make -j"$(nproc)" && \
+    make install
+
+# -----------------------------------------------------------------------------
+# Lua libraries (NO compilation)
+# -----------------------------------------------------------------------------
+WORKDIR /usr/local/openresty/lualib
+
+RUN git clone https://github.com/ledgetech/lua-resty-http.git && \
+    cp -r lua-resty-http/lib/resty ./ && \
+    rm -rf lua-resty-http
+
+RUN git clone https://github.com/bungle/lua-resty-session.git && \
+    cp -r lua-resty-session/lib/resty ./ && \
+    rm -rf lua-resty-session
+
+RUN git clone https://github.com/zmartzone/lua-resty-openidc.git && \
+    cp -r lua-resty-openidc/lib/resty ./ && \
+    rm -rf lua-resty-openidc
+
+RUN git clone https://github.com/SkyLothar/lua-resty-jwt.git && \
+    cp -r lua-resty-jwt/lib/resty ./ && \
+    rm -rf lua-resty-jwt
+
+RUN git clone https://github.com/jkeys089/lua-resty-hmac.git && \
+    cp -r lua-resty-hmac/lib/resty ./ && \
+    rm -rf lua-resty-hmac
+
+RUN git clone https://github.com/fffonion/lua-resty-openssl.git && \
+    cp -r lua-resty-openssl/lib/resty ./ && \
+    rm -rf lua-resty-openssl
+
+# Redis (official OpenResty client)
+RUN git clone https://github.com/openresty/lua-resty-redis.git && \
+    cp -r lua-resty-redis/lib/resty ./ && \
+    rm -rf lua-resty-redis
+
+# String utilities (needed for JWT/HMAC/encoding)
+RUN git clone https://github.com/openresty/lua-resty-string.git && \
+    cp -r lua-resty-string/lib/resty ./ && \
+    rm -rf lua-resty-string
+
+# -----------------------------------------------------------------------------
+# Create runtime directories
+# -----------------------------------------------------------------------------
+RUN mkdir -p /etc/openresty/conf.d && \
+    mkdir -p /var/log/openresty && \
+    mkdir -p /var/cache/nginx && \
+    chown -R openresty:openresty \
+        /var/log/openresty \
+        /var/cache/nginx
+
+# -----------------------------------------------------------------------------
+# Logging -> docker logs (stdout/stderr)
+# -----------------------------------------------------------------------------
+RUN mkdir -p /usr/local/openresty/nginx/logs && \
+    mkdir -p /var/log/nginx && \
+    ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log && \
+    ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log && \
+    ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log && \
+    chown -R openresty:openresty /usr/local/openresty/nginx/logs /var/log/nginx        
+# # 3. Security: Create system directories and set permissions
+# # We also symlink logs to stdout/stderr so they can be read by 'docker logs'
+# # without requiring persistent disk writes.
+# RUN mkdir -p /var/run/openresty /var/cache/nginx /var/log/nginx /usr/local/openresty/nginx/conf/ \
+#     && ln -sf /dev/stdout /var/log/nginx/access.log \
+#     && ln -sf /dev/stderr /var/log/nginx/error.log \
+#     && chown -R 1000:0 /var/run/openresty /var/cache/nginx /var/log/nginx /usr/local/openresty
+
+# -----------------------------------------------------------------------------
+# Environment
+# -----------------------------------------------------------------------------
+ENV PATH="/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:${PATH}"
+
+ENV LUA_PATH="/usr/local/openresty/lualib/?.lua;;"
+
+# -----------------------------------------------------------------------------
+# Cleanup
+# -----------------------------------------------------------------------------
+RUN rm -rf /tmp/*
+
+EXPOSE 80 443
+
+STOPSIGNAL SIGQUIT
+
+# -----------------------------------------------------------------------------
+# Start OpenResty
+# -----------------------------------------------------------------------------
+CMD ["/usr/local/openresty/bin/openresty", "-g", "daemon off;"]
