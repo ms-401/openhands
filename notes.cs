@@ -1,3 +1,10 @@
+        # Serve static hello.html
+        location = /hello {
+            # Ensure the path below points to the directory containing hello.html
+            root /usr/local/openresty/nginx/html;
+            try_files /hello.html =404;
+        }
+
 jwt: 
 
 https://github.com/SkyLothar/lua-resty-jwt/blob/master/examples/guard.lua
