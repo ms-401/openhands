@@ -1,3 +1,53 @@
+
+
+curl -f "https://updates.r9.all-hands.dev/embedded/openhands/stable/0.7.29" -H "Authorization: eyJpIjoiM0VXY1dDNko1ZElHdjBJZ1BWRFhTMFhkM0c0IiwicyI6IjNFV2NXSFhNbk05OTBjQ1RNSmxyZldYOHNEbiJ9" -o openhands-stable.tgz
+tar -xvzf openhands-stable.tgz
+docker pull images.r9.all-hands.dev/proxy/openhands/bitnamilegacy/postgresql:latest
+docker pull images.r9.all-hands.dev/proxy/openhands/busybox
+docker pull images.r9.all-hands.dev/proxy/openhands/docker.io/bitnamilegacy/keycloak:26.3.0-debian-12-r0
+docker pull images.r9.all-hands.dev/proxy/openhands/docker.io/bitnamilegacy/postgresql:16.4.0-debian-12-r14
+docker pull images.r9.all-hands.dev/proxy/openhands/docker.io/bitnamilegacy/redis:7.4.1-debian-12-r2
+docker pull images.r9.all-hands.dev/proxy/openhands/ghcr.io/berriai/litellm-database:main-v1.80.8-nightly
+docker pull images.r9.all-hands.dev/proxy/openhands/ghcr.io/openhands/enterprise-server:cloud-1.34.0
+docker pull images.r9.all-hands.dev/proxy/openhands/ghcr.io/openhands/runtime-api:sha-3603c38
+docker pull images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/cert-manager-cainjector:v1.20.2
+docker pull images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/cert-manager-controller:v1.20.2
+docker pull images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/cert-manager-startupapicheck:v1.20.2
+docker pull images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/cert-manager-webhook:v1.20.2
+docker pull images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/trust-manager:v0.22.1
+docker pull images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/trust-pkg-debian-bookworm:20230311-deb12u1.6
+docker tag images.r9.all-hands.dev/proxy/openhands/bitnamilegacy/postgresql:latest $YOUR_PRIVATE_REGISTRY/openhands/bitnamilegacy/postgresql:latest
+docker tag images.r9.all-hands.dev/proxy/openhands/busybox $YOUR_PRIVATE_REGISTRY/openhands/busybox
+docker tag images.r9.all-hands.dev/proxy/openhands/docker.io/bitnamilegacy/keycloak:26.3.0-debian-12-r0 $YOUR_PRIVATE_REGISTRY/openhands/bitnamilegacy/keycloak:26.3.0-debian-12-r0
+docker tag images.r9.all-hands.dev/proxy/openhands/docker.io/bitnamilegacy/postgresql:16.4.0-debian-12-r14 $YOUR_PRIVATE_REGISTRY/openhands/bitnamilegacy/postgresql:16.4.0-debian-12-r14
+docker tag images.r9.all-hands.dev/proxy/openhands/docker.io/bitnamilegacy/redis:7.4.1-debian-12-r2 $YOUR_PRIVATE_REGISTRY/openhands/bitnamilegacy/redis:7.4.1-debian-12-r2
+docker tag images.r9.all-hands.dev/proxy/openhands/ghcr.io/berriai/litellm-database:main-v1.80.8-nightly $YOUR_PRIVATE_REGISTRY/openhands/berriai/litellm-database:main-v1.80.8-nightly
+docker tag images.r9.all-hands.dev/proxy/openhands/ghcr.io/openhands/enterprise-server:cloud-1.34.0 $YOUR_PRIVATE_REGISTRY/openhands/openhands/enterprise-server:cloud-1.34.0
+docker tag images.r9.all-hands.dev/proxy/openhands/ghcr.io/openhands/runtime-api:sha-3603c38 $YOUR_PRIVATE_REGISTRY/openhands/openhands/runtime-api:sha-3603c38
+docker tag images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/cert-manager-cainjector:v1.20.2 $YOUR_PRIVATE_REGISTRY/openhands/jetstack/cert-manager-cainjector:v1.20.2
+docker tag images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/cert-manager-controller:v1.20.2 $YOUR_PRIVATE_REGISTRY/openhands/jetstack/cert-manager-controller:v1.20.2
+docker tag images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/cert-manager-startupapicheck:v1.20.2 $YOUR_PRIVATE_REGISTRY/openhands/jetstack/cert-manager-startupapicheck:v1.20.2
+docker tag images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/cert-manager-webhook:v1.20.2 $YOUR_PRIVATE_REGISTRY/openhands/jetstack/cert-manager-webhook:v1.20.2
+docker tag images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/trust-manager:v0.22.1 $YOUR_PRIVATE_REGISTRY/openhands/jetstack/trust-manager:v0.22.1
+docker tag images.r9.all-hands.dev/proxy/openhands/quay.io/jetstack/trust-pkg-debian-bookworm:20230311-deb12u1.6 $YOUR_PRIVATE_REGISTRY/openhands/jetstack/trust-pkg-debian-bookworm:20230311-deb12u1.6
+docker push $YOUR_PRIVATE_REGISTRY/openhands/bitnamilegacy/postgresql:latest
+docker push $YOUR_PRIVATE_REGISTRY/openhands/busybox
+docker push $YOUR_PRIVATE_REGISTRY/openhands/bitnamilegacy/keycloak:26.3.0-debian-12-r0
+docker push $YOUR_PRIVATE_REGISTRY/openhands/bitnamilegacy/postgresql:16.4.0-debian-12-r14
+docker push $YOUR_PRIVATE_REGISTRY/openhands/bitnamilegacy/redis:7.4.1-debian-12-r2
+docker push $YOUR_PRIVATE_REGISTRY/openhands/berriai/litellm-database:main-v1.80.8-nightly
+docker push $YOUR_PRIVATE_REGISTRY/openhands/openhands/enterprise-server:cloud-1.34.0
+docker push $YOUR_PRIVATE_REGISTRY/openhands/openhands/runtime-api:sha-3603c38
+docker push $YOUR_PRIVATE_REGISTRY/openhands/jetstack/cert-manager-cainjector:v1.20.2
+docker push $YOUR_PRIVATE_REGISTRY/openhands/jetstack/cert-manager-controller:v1.20.2
+docker push $YOUR_PRIVATE_REGISTRY/openhands/jetstack/cert-manager-startupapicheck:v1.20.2
+docker push $YOUR_PRIVATE_REGISTRY/openhands/jetstack/cert-manager-webhook:v1.20.2
+docker push $YOUR_PRIVATE_REGISTRY/openhands/jetstack/trust-manager:v0.22.1
+docker push $YOUR_PRIVATE_REGISTRY/openhands/jetstack/trust-pkg-debian-bookworm:20230311-deb12u1.6
+
+sudo ./openhands install --license license.yaml --registry $YOUR_PRIVATE_REGISTRY/openhands --registry-username <username> --registry-password <password>
+
+//----------------------------------------------------------------------------------------------------------
 ref: https://openresty-reference.readthedocs.io/en/latest/Directives/#content_by_lua_file 
 
 # Serve static hello.html
