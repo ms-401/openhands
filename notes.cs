@@ -1,5 +1,5 @@
 
-
+https://chatgpt.com/share/6a26a131-9bb4-83eb-ac45-3ad2b9b82c28
 curl -f "https://updates.r9.all-hands.dev/embedded/openhands/stable/0.7.29" -H "Authorization: eyJpIjoiM0VXY1dDNko1ZElHdjBJZ1BWRFhTMFhkM0c0IiwicyI6IjNFV2NXSFhNbk05OTBjQ1RNSmxyZldYOHNEbiJ9" -o openhands-stable.tgz
 tar -xvzf openhands-stable.tgz
 docker pull images.r9.all-hands.dev/proxy/openhands/bitnamilegacy/postgresql:latest
